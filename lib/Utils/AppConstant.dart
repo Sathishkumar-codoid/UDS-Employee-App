@@ -21,4 +21,5 @@ abstract class AppConstant{
   static const String dateIcon = "assets/dateIcon.png";
   static const String frontarrowIcon = "assets/front_arrow_icon.png";
   static const String clientIcon = "assets/client_Icon.png";
+  static const String imageContainer = "assets/imageupload.png";
 }

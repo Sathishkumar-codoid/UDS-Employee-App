@@ -62,7 +62,12 @@ class _OTPScreenState extends State<OTPScreen> {
         print(state.data);
         var token=state.data['session']['token'];
         setToken(token);
+        print('token has setted');
         print(token);
+        print(state.data['data']['id']);
+        var userid=state.data['data']['id'];
+        setUserId(userid);
+        print(userid);
         Navigator.push(context, MaterialPageRoute(builder: (context)=>DashBoardScreen()));
       }
 

@@ -2,6 +2,7 @@ import 'package:uds_employee/Allnavigations/AllNavigationsDirectory.dart';
 
 import '../../Allnavigations/AllBlocDirectory.dart';
 import '../../Allnavigations/AllimportedDirectory.dart';
+import '../RefCameraScreen.dart';
 
 class SalaryScreen extends StatefulWidget {
   const SalaryScreen({Key? key}) : super(key: key);
@@ -19,22 +20,27 @@ class _SalaryScreenState extends State<SalaryScreen> {
         child: Column(
           children: [
 
-            SizedBox(
-              width: 90.w,
-              child: Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    side: BorderSide(color: AppTheme.themeLightGrey,width: 0.5)
-                ),
-                child: Padding(
-                  padding:  EdgeInsets.fromLTRB(3.h,2.h,3.h,2.h),
-                  child: Row(
-                    children: [
-                      CommonUI().myText(text: "Pay Slip"),
-                      Spacer(),
-                      Image.asset(AppConstant.rightArrowIcon,scale: 3,)
-                    ],
+            GestureDetector(
+              onTap: (){
+                //Navigator.push(context, MaterialPageRoute(builder: (context)=> RefCameraScreen()));
+              },
+              child: SizedBox(
+                width: 90.w,
+                child: Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      side: BorderSide(color: AppTheme.themeLightGrey,width: 0.5)
+                  ),
+                  child: Padding(
+                    padding:  EdgeInsets.fromLTRB(3.h,2.h,3.h,2.h),
+                    child: Row(
+                      children: [
+                        CommonUI().myText(text: "Pay Slip"),
+                        Spacer(),
+                        Image.asset(AppConstant.rightArrowIcon,scale: 3,)
+                      ],
+                    ),
                   ),
                 ),
               ),

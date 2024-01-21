@@ -18,6 +18,31 @@ class AttendanceScreen extends StatefulWidget {
 }
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
+  String? userId;
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserId();
+  }
+
+  getUserId() async{
+    print("get un");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('id');
+
+    });
+    print('userid');
+    print(userId);
+
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -60,7 +85,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             Gap(2.h),
             GestureDetector(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveScreen(userId: userId!,)));
               },
               child: Container(
                 width: 90.w,
@@ -92,7 +117,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             Gap(2.h),
             GestureDetector(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>const PermissionScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> PermissionScreen(userID: userId!,)));
               },
               child: Container(
                 width: 90.w,

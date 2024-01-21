@@ -26,6 +26,7 @@ abstract class AppTheme{
   static const Color  buttonColor = Color(0xFFEF4D39);
   static const Color  bgColor = Color(0xFFFFF);
   static const Color  fillColor = Color(0xFD9D9D9);
+  static const Color grey = Color(0xFF707070);
 
   static TextStyle customTextStyleWithSize(
       {required double size,

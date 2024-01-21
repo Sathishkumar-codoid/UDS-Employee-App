@@ -2,6 +2,7 @@ import 'package:uds_employee/Allnavigations/AllNavigationsDirectory.dart';
 import 'package:uds_employee/Allnavigations/AllimportedDirectory.dart';
 
 import '../../../Allnavigations/AllBlocDirectory.dart';
+import 'PermissionDetails.dart';
 
 class PermissionHistory extends StatefulWidget {
   const PermissionHistory({Key? key}) : super(key: key);
@@ -127,7 +128,10 @@ class _PermissionHistoryState extends State<PermissionHistory> {
                                     gradientsecond:AppTheme.primaryColor2 ,
                                     width: 20.w,
 
-                                    onPressed: (){}, file: Row(
+                                    onPressed: (){
+
+                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>PermissionDetailsScreen(PermissionId: '',)));
+                                    }, file: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     CommonUI().myText(text: "VIEW",color: AppTheme.whiteColor,fontSize: 9.sp)

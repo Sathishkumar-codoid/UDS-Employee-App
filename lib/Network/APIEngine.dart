@@ -3,6 +3,7 @@ import 'package:uds_employee/Allnavigations/AllimportedDirectory.dart';
 import 'package:http/http.dart' as HTTP;
 
 import '../Allnavigations/AllBlocDirectory.dart';
+import '../Utils/AppAlertController.dart';
 
 
 
@@ -137,7 +138,10 @@ class APIEngine{
       }
 
     }catch(exception){
+      // print('exception1111111');
+      // print(exception);
       BuildContext? ccc = AppDataHelper.rootContext;
+      // AppAlertController().showAlert(message: exception.toString(), inContext: ccc!);
 
 
       return commonExceptionResponse(exception as Exception);

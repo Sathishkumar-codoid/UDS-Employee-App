@@ -11,6 +11,8 @@ import 'package:uds_employee/Utils/AppAlertController.dart';
 import '../../Allnavigations/AllBlocDirectory.dart';
 import '../Attendance/Leave/LeaveScreen.dart';
 import '../PDFScreen/PdfFileScreen.dart';
+import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -27,6 +29,47 @@ class _HomeScreenState extends State<HomeScreen> {
   HomeShiftDataModel? shiftData;
   String? attendanceId;
   BuildContext? _blocContext;
+  String? userId;
+  Duration? remainingTime;
+
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserId();
+
+  }
+
+  getUserId() async{
+    print("get un");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('id');
+
+    });
+    print('userid');
+    print(userId);
+
+
+  }
+
+
+
+
+   String calculateTimer(DateTime shiftTime){
+
+      DateTime now = DateTime.now();
+      Duration difference = shiftTime.difference(now);
+
+      setState(() {
+        remainingTime = difference;
+      });
+return remainingTime.toString();
+
+  }
   @override
   Widget build(BuildContext context) {
     return
@@ -56,17 +99,18 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if(state is GetCheckInStatusSuccessState){
-            print('check in state');
-            print(state);
-            print(state.data['data']['check_in']);
-            isCheckIn=state.data['data']['check_in'];
-            if(state.data['data']['attendance_data'] !=null){
-              print("object is not null");
-              attendanceId=state.data['data']['attendance_data']['id'];
-              print('attendanceId');
-              print(attendanceId);
+            print(state.data);
+            if(state.data['data'].isNotEmpty){
+              isCheckIn=state.data['data']['check_in'];
+              if(state.data['data']['attendance_data'] !=null){
+                print("object is not null");
+                attendanceId=state.data['data']['attendance_data']['id'];
+                print('attendanceId');
+                print(attendanceId);
+              }
+              shiftData = HomeShiftDataModel.fromJson(state.data['data']);
             }
-            shiftData = HomeShiftDataModel.fromJson(state.data['data']);
+
 
           }
           if(state is CheckOutAttendanceSuccessState){
@@ -86,7 +130,12 @@ class _HomeScreenState extends State<HomeScreen> {
               SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
+                child:
+                    shiftData !=null
+                ?
+
+
+                Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -197,8 +246,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     // ),
                     //  ),
                     Gap(5.h),
-                    CommonUI().myText(text: "Today Shift",fontWeight: FontWeight.w600,fontSize: 13.sp),
+                    shiftData !=null ?   CommonUI().myText(text: "Today Shift",fontWeight: FontWeight.w600,fontSize: 13.sp): SizedBox(),
                     Gap(2.h),
+                    shiftData !=null
+                    ?
 
 
                     Padding(
@@ -265,6 +316,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     CommonUI().verticleAlign(width: 0.5.w),
                                     Image.asset(
+                                      AppConstant.clientIcon,
+                                      scale: 3,
+                                    ),
+                                    CommonUI().verticleAlign(width: 3.w),
+                                    CommonUI().myText(
+                                        text: "Client",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12.sp),
+                                    CommonUI().verticleAlign(width: 4.w),
+                                    CommonUI().myText(
+                                        text: shiftData!.branchData!.clientdData!.clientName.toString(),
+                                        fontWeight: FontWeight.normal,
+                                        color: AppTheme.FontGrey,
+                                        fontSize: 12.sp),
+                                  ],
+                                ),
+                              ),
+                              CommonUI().verticleAlign(height: 2.h),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(2.w, 0, 2.w, 0),
+                                child: Row(
+                                  children: [
+                                    CommonUI().verticleAlign(width: 0.5.w),
+                                    Image.asset(
                                       AppConstant.locationIcon,
                                       scale: 4,
                                     ),
@@ -275,7 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fontSize: 12.sp),
                                     CommonUI().verticleAlign(width: 4.w),
                                     CommonUI().myText(
-                                        text: shiftData!.branchData.zoneId.zoneName,
+                                        text: shiftData!.branchData!.zoneId.zoneName,
                                         fontWeight: FontWeight.normal,
                                         color: AppTheme.FontGrey,
                                         fontSize: 12.sp),
@@ -283,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: AppTheme.FontGrey,
                                         fontSize: 12.sp),
                                     CommonUI().myText(
-                                        text: shiftData!.branchData.regionId!.regionName,
+                                        text: shiftData!.branchData!.regionId!.regionName,
                                         fontWeight: FontWeight.normal,
                                         color: AppTheme.FontGrey,
                                         fontSize: 12.sp),
@@ -296,7 +371,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     CommonUI().myText(
-                                        text: "3 hrs 25 minutes left",
+                                        text: "3 hrs 25 minutes",
                                         fontSize: 10.sp,
                                         color: AppTheme.FontGrey,
                                         fontWeight: FontWeight.normal),
@@ -390,12 +465,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                    ),
+                    ) : SizedBox(),
                     Gap(4.h),
 
                     GestureDetector(
                       onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LeaveScreen(userId: userId,)));
 
                       },
                       child: Padding(
@@ -431,67 +506,178 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Gap(4.h),
-                    CommonUI().myText(text: "LEAVE STATUS"),
-
-                    Gap(2.h),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        //  width: 90.w,
-                        decoration: BoxDecoration(
-                          color: AppTheme.whiteColor,
-                          borderRadius: BorderRadius.circular(5.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.8),
-                              // spreadRadius: 1,
-                              blurRadius: 4,
-                              offset: const Offset(0,0), // changes the position of the shadow
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(2.w, 2.h, 2.w, 2.h),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Gap(2.w),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CommonUI().myText(text: "Casual Leave"),
-                                  Gap(2.w),
-                                  CommonUI().myText(text: "12-01-2024",fontSize: 9.sp),
-                                ],
-                              ),
-                              Spacer(),
-                             CommonUI.buttonContainer(
-                               height: 3.5.h,
-                                 width: 20.w,
-                                 gradientsecond: AppTheme.primaryColor2,
-                                 gradientfirst: AppTheme.primaryColor2,
-
-
-                                 onPressed: (){}, file: Row(
-                               mainAxisAlignment: MainAxisAlignment.center,
-                               crossAxisAlignment: CrossAxisAlignment.center,
-                               children: [
-                                 CommonUI().myText(text: 'Pending',color: AppTheme.whiteColor,fontSize: 9.sp)
-                               ],
-                               
-                             ))
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    // CommonUI().myText(text: "LEAVE STATUS"),
+                    //
+                    // Gap(2.h),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(8.0),
+                    //   child: Container(
+                    //     //  width: 90.w,
+                    //     decoration: BoxDecoration(
+                    //       color: AppTheme.whiteColor,
+                    //       borderRadius: BorderRadius.circular(5.0),
+                    //       boxShadow: [
+                    //         BoxShadow(
+                    //           color: Colors.grey.withOpacity(0.8),
+                    //           // spreadRadius: 1,
+                    //           blurRadius: 4,
+                    //           offset: const Offset(0,0), // changes the position of the shadow
+                    //         ),
+                    //       ],
+                    //     ),
+                    //     child: Padding(
+                    //       padding: EdgeInsets.fromLTRB(2.w, 2.h, 2.w, 2.h),
+                    //       child: Row(
+                    //         mainAxisAlignment: MainAxisAlignment.start,
+                    //         crossAxisAlignment: CrossAxisAlignment.start,
+                    //         children: [
+                    //           Gap(2.w),
+                    //           Column(
+                    //             crossAxisAlignment: CrossAxisAlignment.start,
+                    //             mainAxisAlignment: MainAxisAlignment.start,
+                    //             children: [
+                    //               CommonUI().myText(text: "Casual Leave"),
+                    //               Gap(2.w),
+                    //               CommonUI().myText(text: "12-01-2024",fontSize: 9.sp),
+                    //             ],
+                    //           ),
+                    //           Spacer(),
+                    //          CommonUI.buttonContainer(
+                    //            height: 3.5.h,
+                    //              width: 20.w,
+                    //              gradientsecond: AppTheme.primaryColor2,
+                    //              gradientfirst: AppTheme.primaryColor2,
+                    //
+                    //
+                    //              onPressed: (){}, file: Row(
+                    //            mainAxisAlignment: MainAxisAlignment.center,
+                    //            crossAxisAlignment: CrossAxisAlignment.center,
+                    //            children: [
+                    //              CommonUI().myText(text: 'Pending',color: AppTheme.whiteColor,fontSize: 9.sp)
+                    //            ],
+                    //
+                    //          ))
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
 
 
 
                   ],
+                ) : Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                    Row(
+                    children: [
+                    CircleAvatar(
+                    child: Image.asset(AppConstant.profileIcon),
+              ),
+                Gap(20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    CommonUI().myText(text: "Welcome",fontWeight: FontWeight.w500 ,fontSize: 10.sp,letterSpacing: 1),
+                    Gap(10),
+                    Row(
+                      children: [
+                        CommonUI().myText(text: _employeeData!.userData.firstName.toString(),fontWeight: FontWeight.w500 ,fontSize: 14.sp,letterSpacing: 0.1),
+                        Gap(10),
+                        CommonUI().myText(text: _employeeData!.userData.userRole.description.toString(),fontWeight: FontWeight.w600 ,fontSize: 10.sp,letterSpacing: 0.1,color: AppTheme.primaryColor2),
+                      ],
+                    ),
+                  ],
+                )
+                ],
+              ),
+
+            Gap(5.h),
+            CommonUI().myText(text: "Job Offer Letter",fontWeight: FontWeight.w600,fontSize: 13.sp),
+            Gap(2.h),
+             Padding(
+               padding: const EdgeInsets.all(8.0),
+               child: Container(
+               // width: 95.w,
+                 decoration: BoxDecoration(
+                   color: AppTheme.whiteColor,
+                   borderRadius: BorderRadius.circular(5.0),
+                   boxShadow: [
+                     BoxShadow(
+                       color: Colors.grey.withOpacity(0.8),
+                       // spreadRadius: 1,
+                       blurRadius: 4,
+                       offset: const Offset(0,0), // changes the position of the shadow
+                     ),
+                   ],
+                 ),
+                child: Padding(
+                  padding:  EdgeInsets.fromLTRB(3.h,2.h,3.h,2.h),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CommonUI().myText(text: "Name : ${_employeeData!.userData.firstName}"),
+                      Gap(2.h),
+                      CommonUI().myText(text: "Job : ${_employeeData!.userData.userRole.description}"),
+                      Gap(2.h),
+                      CommonUI().myText(text: "Salary: ${_employeeData!.offerLetter.grossSalary}"),
+                      Gap(2.h),
+                      Row(
+                        mainAxisAlignment:MainAxisAlignment.end,
+                        children: [
+                          CommonUI.buttonContainer(
+                            height: 3.h,
+                              width: 20.w,
+
+                              onPressed: (){
+                                createFileOfPdfUrl()
+                                    .then((value) {
+                                  setState(() {
+                                    pdfPath = value.path;
+                                  });
+                                });
+                                AppAlertController()
+                                    .showProgressIndicator();
+
+                                Future.delayed(
+                                    Duration(seconds: 5), () {
+                                  AppAlertController()
+                                      .hideProgressIndicator();
+                                  setState(() {
+                                    Navigator.of(context).push(
+                                        CustomPageRoute(
+                                            begin: const Offset(
+                                                1.0, 0.0),
+                                            end: Offset.zero,
+                                            duration: 1,
+                                            child: PDFScreen(
+                                              pdfPath: pdfPath!,
+                                            )));
+                                  });
+                                });
+
+
+
+                              }, file: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(child: CommonUI().myText(text: "View",color: AppTheme.whiteColor))
+                            ],
+                          ))
+
+                        ],
+                      )
+
+                    ],
+                  ),
                 ),
+            ),
+             ),
+          ]
+                    ),
               ),
             )
 
@@ -521,8 +707,6 @@ class _HomeScreenState extends State<HomeScreen> {
       await file.writeAsBytes(bytes, flush: true);
       completer.complete(file);
     } catch (e) {
-      print(e);
-      print(e);
       throw Exception('Error parsing asset file!');
 
     }

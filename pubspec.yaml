@@ -49,6 +49,13 @@ dependencies:
   syncfusion_flutter_datepicker: ^20.3.48
   shimmer: ^3.0.0
   flutter_typeahead: ^4.6.2
+  dio: ^5.4.0
+  image_picker: ^0.8.7+5
+  image_cropper: ^4.0.1
+  path: ^1.8.0
+  file_picker: ^5.3.1
+  flutter_timer_countdown: ^1.0.7
+
 
 
 

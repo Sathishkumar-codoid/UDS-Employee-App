@@ -1,3 +1,6 @@
+
+
+
 class APIUrlManager{
 static const baseURL='http://122.186.126.218:8031';
 // http://122.186.126.218:8031
@@ -11,7 +14,7 @@ static const attendanceUpdate='$baseURL/employeeapp/attendance/';
 static const checkinStatus='$baseURL/employeeapp/inout/';
 static const leaveTypes='$baseURL/management/leavetype/get/';
 static const applyLeave='$baseURL/management/leaves/';
-
+static const permission='$baseURL/management/permissions/';
 
 
 }

@@ -91,22 +91,40 @@ class CommonUI {
 
   }
 
-    Widget _buildShimmer(BuildContext context){
-    return Shimmer.fromColors(
-      baseColor: (Colors.grey[300])!,
-      highlightColor: (Colors.grey[100])!,
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: 5, // Number of shimmering items
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Container(
-              width: double.infinity,
-              height: 15.h,
-              color: Colors.white, // Placeholder color
-            ),
-          );
-        },
+
+  Widget imageUploadContainer({
+    double height = 13,
+    double width = 40,
+    String? typeText,
+
+  }){
+    return     Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: AppTheme.grey,  // Border color
+          width: 0.5,           // Border width
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey[200]!,
+            blurRadius: 12.0,
+            spreadRadius: 2.0,
+            offset: Offset(0, 3), // Changes the shadow position
+          ),
+        ],
+      ),
+      child:
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(AppConstant.imageContainer,
+            scale: 4.0,),
+          CommonUI().myTextL(text: typeText!,color: AppTheme.blackColor,
+              fontSize: 10.sp)
+        ],
       ),
     );
   }

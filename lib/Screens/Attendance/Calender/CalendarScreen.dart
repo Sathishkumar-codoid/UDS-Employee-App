@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:uds_employee/Allnavigations/AllNavigationsDirectory.dart';
 import 'package:uds_employee/Allnavigations/AllimportedDirectory.dart';
+import 'package:uds_employee/Bloc/PermissionBloc.dart';
 import 'package:uds_employee/Screens/Attendance/cameraFile.dart';
 import 'package:uds_employee/Utils/AppThemeManager.dart';
 
@@ -11,10 +12,11 @@ import '../../../Bloc/CalenderScreenBloc.dart';
 import '../Leave/LeaveApply.dart';
 
 class CalenderScreen extends StatefulWidget {
-  CalenderScreen({Key? key, required this.value, this.leaveType})
+  CalenderScreen({Key? key, required this.value, this.leaveType,this.leaveTypeID})
       : super(key: key);
   String value;
   String? leaveType;
+  String? leaveTypeID;
 
   @override
   State<CalenderScreen> createState() => _CalenderScreenState();
@@ -36,7 +38,8 @@ class _CalenderScreenState extends State<CalenderScreen> {
   DateTime? _initialDisplayDate;
   int count = 1;
   int dateofmONTH = DateTime.now().month;
-  // GlobalKey<SfDateRangePickerState> datePickerKey = GlobalKey<SfDateRangePickerState>();
+  String userId='';
+
 
   @override
   void initState() {
@@ -45,7 +48,21 @@ class _CalenderScreenState extends State<CalenderScreen> {
     _selectedDate = DateTime.now().toString();
     _controller = DateRangePickerController();
     _initialDisplayDate = DateTime.now();
+    getUserId();
   }
+
+  getUserId() async{
+    print("get un");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('id')!;
+
+    });
+    print('userid');
+    print(userId);
+
+  }
+
 
   List<DateTime> selecteddate = [];
   List<DateTime> presentDates = [];
@@ -69,8 +86,8 @@ class _CalenderScreenState extends State<CalenderScreen> {
 
         if (DateTime.now().toString().split(' ')[0] ==
             _selectedDate.toString().split(' ')[0]) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CameraScreen()));
+          // Navigator.push(
+          //     context, MaterialPageRoute(builder: (context) => CameraScreen()));
         }
       } else if (args.value is List<DateTime>) {
         _dateCount = args.value.length.toString();
@@ -95,13 +112,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
             (context, state) {
           if (state is GetCalenderSuccessState) {
             calenderDataList.clear();
+            presentDates.clear();
+            absentDates.clear();
+            weekOffDates.clear();
             for (int i = 0; i < state.data['data'].length; i++) {
               calenderDataList
                   .add(GetCalenderData.fromJson(state.data['data']['data'][i]));
             }
-            presentDates.clear();
-            absentDates.clear();
-            weekOffDates.clear();
+
             for (int i = 0; i < calenderDataList.length; i++) {
               if (calenderDataList[i].present) {
                 presentDates.add(calenderDataList[i].date);
@@ -659,100 +677,128 @@ class _CalenderScreenState extends State<CalenderScreen> {
   }
 
   Widget _buildPermission() {
-    return Container(
-      //height: 40.h,
-      width: 100.w,
-      decoration: BoxDecoration(
-          color: AppTheme.attendanceColor.withOpacity(0.1),
-          borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Gap(2.h),
-            Row(
-              children: [
-                Image.asset(
-                  AppConstant.dateIcon,
-                  scale: 2,
-                ),
-                Gap(3.w),
-                CommonUI().myText(text: '8th Novermber 2023'),
-              ],
-            ),
-            Gap(2.h),
-            Row(
-              children: [
-                Image.asset(
-                  AppConstant.timerIcon,
-                  scale: 3,
-                ),
-                Gap(3.w),
-                CommonUI().myText(text: 'Shift Timing'),
-                Gap(1.w),
-                CommonUI().myText(
-                    text: '8.00am to 4.00pm', color: AppTheme.primaryColor2),
-              ],
-            ),
-            Gap(2.h),
-            CommonUI().myText(text: "PERMISSION"),
-            Gap(2.h),
-            CommonUI().myText(text: "Timing", fontSize: 10.sp),
-            Gap(2.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SizedBox(
-                    width: 40.w,
-                    child: CommonUI.textAreaFormField(
-                        editingController: _permissionFromController,
-                        hinttext: "")),
-                Gap(2.h),
-                CommonUI().myText(text: "TO"),
-                Gap(2.h),
-                SizedBox(
-                    width: 40.w,
-                    child: CommonUI.textAreaFormField(
-                        editingController: _permissionToController,
-                        hinttext: ""))
-              ],
-            ),
-            Gap(4.h),
-            CommonUI().myText(text: "Note", fontSize: 12.sp),
-            Card(
-              color: AppTheme.whiteColor,
-              child: SizedBox(
-                child: CommonUI.textAreaFormField(
-                    maxLines: 5,
-                    editingController: _dutyController,
-                    hinttext: ''),
+    return
+    BlocProvider(create: (context){
+      var bloc=PermissionBloc();
+     // bloc.add(PermissionApplyEvent(context, payload))
+
+      return bloc;
+    },
+    child: BlocListener<PermissionBloc,PermissionState>(
+      listener: (context,state){
+        if(state is PermissionApplySuccessState){
+          print(state);
+          print(state.data);
+      }
+      },
+      child: BlocBuilder<PermissionBloc,PermissionState>(
+        builder: (context,state){
+          return   Container(
+            //height: 40.h,
+            width: 100.w,
+            decoration: BoxDecoration(
+                color: AppTheme.attendanceColor.withOpacity(0.1),
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Gap(2.h),
+                  Row(
+                    children: [
+                      Image.asset(
+                        AppConstant.dateIcon,
+                        scale: 2,
+                      ),
+                      Gap(3.w),
+                      CommonUI().myText(text: '8th Novermber 2023'),
+                    ],
+                  ),
+                  Gap(2.h),
+                  Row(
+                    children: [
+                      Image.asset(
+                        AppConstant.timerIcon,
+                        scale: 3,
+                      ),
+                      Gap(3.w),
+                      CommonUI().myText(text: 'Shift Timing'),
+                      Gap(1.w),
+                      CommonUI().myText(
+                          text: '8.00am to 4.00pm', color: AppTheme.primaryColor2),
+                    ],
+                  ),
+                  Gap(2.h),
+                  CommonUI().myText(text: "PERMISSION"),
+                  Gap(2.h),
+                  CommonUI().myText(text: "Timing", fontSize: 10.sp),
+                  Gap(2.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                          width: 40.w,
+                          child: CommonUI.textAreaFormField(
+                              editingController: _permissionFromController,
+                              hinttext: "")),
+                      Gap(2.h),
+                      CommonUI().myText(text: "TO"),
+                      Gap(2.h),
+                      SizedBox(
+                          width: 40.w,
+                          child: CommonUI.textAreaFormField(
+                              editingController: _permissionToController,
+                              hinttext: ""))
+                    ],
+                  ),
+                  Gap(4.h),
+                  CommonUI().myText(text: "Note", fontSize: 12.sp),
+                  Card(
+                    color: AppTheme.whiteColor,
+                    child: SizedBox(
+                      child: CommonUI.textAreaFormField(
+                          maxLines: 5,
+                          editingController: _dutyController,
+                          hinttext: ''),
+                    ),
+                  ),
+                  Gap(2.h),
+                  Center(
+                    child: CommonUI.buttonContainer(
+                        gradientsecond: AppTheme.buttonColor,
+                        gradientfirst: AppTheme.buttonColor,
+                        height: 4.h,
+                        width: 80.w,
+                        onPressed: () {
+                          var payload=PermissionApply(fromTime: _permissionFromController.text, toTime: _permissionToController.text, notes: _dutyController.text, userId: userId, fromdate: _selectedDate.toString().toString().split(' ')[0]);
+                          BlocProvider.of<PermissionBloc>(context).add(PermissionApplyEvent(context, payload));
+
+
+                        },
+                        file: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CommonUI().myText(
+                                text: "REQUEST PERMISSION",
+                                color: AppTheme.whiteColor,
+                                fontSize: 10.sp),
+                          ],
+                        )),
+                  )
+                ],
               ),
             ),
-            Gap(2.h),
-            Center(
-              child: CommonUI.buttonContainer(
-                  gradientsecond: AppTheme.buttonColor,
-                  gradientfirst: AppTheme.buttonColor,
-                  height: 4.h,
-                  width: 80.w,
-                  onPressed: () {},
-                  file: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CommonUI().myText(
-                          text: "REQUEST PERMISSION",
-                          color: AppTheme.whiteColor,
-                          fontSize: 10.sp),
-                    ],
-                  )),
-            )
-          ],
-        ),
+          );
+        },
+      ),
       ),
     );
+
+
+
   }
 
   Widget _buildLeave(BuildContext context) {
@@ -821,12 +867,12 @@ class _CalenderScreenState extends State<CalenderScreen> {
                   gradientsecond: AppTheme.primaryColor2,
                   onPressed: () {
                     selecteddate.isNotEmpty
-                        ? Navigator.push(
+                        ? Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => LeaveApplyScreen(
                                       date: selecteddate,
-                                      leaveType: widget.leaveType,
+                                      leaveType: widget.leaveType, userId: userId,leaveTypeId: widget.leaveTypeID,
                                     )))
                         : SizedBox();
                   },

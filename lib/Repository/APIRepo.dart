@@ -532,7 +532,8 @@ class HomeShiftDataModel {
   String shiftName;
   String fromTime;
   String endTime;
-  BranchData branchData;
+  BranchData? branchData;
+
   bool checkIn;
 
   HomeShiftDataModel({
@@ -541,42 +542,101 @@ class HomeShiftDataModel {
     required this.fromTime,
     required this.endTime,
     required this.branchData,
+    // required this.clientdData,
     required this.checkIn,
   });
 
   factory HomeShiftDataModel.fromJson(Map<String, dynamic> json) => HomeShiftDataModel(
-    id: json["id"],
-    shiftName: json["shift_name"],
+    id: json["id"].toString(),
+    shiftName: json["shift_name"].toString(),
     fromTime: json["from_time"],
     endTime: json["end_time"],
-    branchData: BranchData.fromJson(json["branch_data"]),
+    branchData: json["branch_data"] !=null ? BranchData.fromJson(json["branch_data"]) : null,
+
     checkIn: json["check_in"],
   );
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "shift_name": shiftName,
-    "from_time": fromTime,
-    "end_time": endTime,
-    "branch_data": branchData.toJson(),
-    "check_in": checkIn,
-  };
+  // Map<String, dynamic> toJson() => {
+  //   "id": id,
+  //   "shift_name": shiftName,
+  //   "from_time": fromTime,
+  //   "end_time": endTime,
+  //   "branch_data": branchData.toJson(),
+  //   "client_id":clientdData.toJson(),
+  //   "check_in": checkIn,
+  // };
+}
+
+
+class ClientId {
+  String id;
+  // dynamic deleted;
+  // bool deletedByCascade;
+  String? clientName;
+  // String description;
+  // bool isActive;
+  // DateTime createdAt;
+  // DateTime modifiedAt;
+  // String createdBy;
+  // dynamic modifiedBy;
+  // dynamic logoId;
+  // String? regionName;
+  // String? stateId;
+  // String? stateName;
+
+  ClientId({
+    required this.id,
+    // required this.deleted,
+    // required this.deletedByCascade,
+    this.clientName,
+    // required this.description,
+    // required this.isActive,
+    // required this.createdAt,
+    // required this.modifiedAt,
+    // required this.createdBy,
+    // required this.modifiedBy,
+    // this.logoId,
+    // this.regionName,
+    // this.stateId,
+    // this.stateName,
+  });
+
+  factory ClientId.fromJson(Map<String, dynamic> json) => ClientId(
+    id: json["id"],
+    // deleted: json["deleted"],
+    // deletedByCascade: json["deleted_by_cascade"],
+    clientName: json["client_name"],
+    // description: json["description"],
+    // isActive: json["is_active"],
+    // createdAt: DateTime.parse(json["created_at"]),
+    // modifiedAt: DateTime.parse(json["modified_at"]),
+    // createdBy: json["created_by"],
+    // modifiedBy: json["modified_by"],
+    // logoId: json["logo_id"],
+    // regionName: json["region_name"],
+    // stateId: json["state_id"],
+    // stateName: json["state_name"],
+  );
+
 }
 
 class BranchData {
   String id;
   RegionId? regionId;
   ZoneId zoneId;
+  ClientId clientdData;
 
   BranchData({
     required this.id,
     required this.regionId,
     required this.zoneId,
+    required this.clientdData,
   });
 
   factory BranchData.fromJson(Map<String, dynamic> json) => BranchData(
     id: json["id"],
     regionId: RegionId.fromJson(json["region_id"]),
+    clientdData: ClientId.fromJson(json['client_id']),
 
     zoneId: ZoneId.fromJson(json["zone_id"]),
   );
@@ -585,6 +645,7 @@ class BranchData {
     "id": id,
     "region_id": regionId?.toJson(),
     "zone_id": zoneId.toJson(),
+
   };
 }
 
@@ -683,6 +744,243 @@ class LeaveType{
   );
 
 }
+
+
+
+
+class ApplyLeave {
+  String fromDate;
+  String? toDate;
+  bool continueLeave;
+  //String status;
+  String notes;
+  String userId;
+  String leaveType;
+
+  ApplyLeave({
+    required this.fromDate,
+    required this.toDate,
+    required this.continueLeave,
+   // required this.status,
+    required this.notes,
+    required this.userId,
+    required this.leaveType,
+  });
+
+  factory ApplyLeave.fromJson(Map<String, dynamic> json) => ApplyLeave(
+    fromDate: json["from_date"],
+    toDate: json["to_date"],
+    continueLeave: json["continue_leave"],
+   // status: json["status"],
+    notes: json["notes"],
+    userId: json["user_id"],
+    leaveType: json["leave_type"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "from_date": fromDate,
+    "to_date": toDate,
+    "continue_leave": continueLeave,
+  //  "status": status,
+    "notes": notes,
+    "user_id": userId,
+    "leave_type": leaveType,
+  };
+}
+
+
+
+class LeaveStatusType {
+  String id;
+  LeaveStatusData leaveType;
+  DateTime fromDate;
+  DateTime? toDate;
+  bool continueLeave;
+  String status;
+  String notes;
+  DateTime appliedDate;
+  dynamic approvedDate;
+
+
+  LeaveStatusType({
+    required this.id,
+    required this.leaveType,
+
+    required this.fromDate,
+    required this.toDate,
+    required this.continueLeave,
+    required this.status,
+    required this.notes,
+    required this.appliedDate,
+    required this.approvedDate,
+
+  });
+
+  factory LeaveStatusType.fromJson(Map<String, dynamic> json) => LeaveStatusType(
+    id: json["id"],
+
+    leaveType: LeaveStatusData.fromJson(json["leave_type"]),
+    fromDate: DateTime.parse(json["from_date"]),
+    toDate: json["to_date"] == null ? null : DateTime.parse(json["to_date"]),
+    continueLeave: json["continue_leave"],
+    status: json["status"],
+    notes: json["notes"],
+    appliedDate: DateTime.parse(json["applied_date"]),
+    approvedDate: json["approved_date"],
+
+  );
+
+}
+
+
+class LeaveStatusData {
+  String id;
+  // dynamic deleted;
+  // bool deletedByCascade;
+  // dynamic fromDate;
+  // dynamic toDate;
+  // dynamic status;
+  // dynamic notes;
+  // dynamic appliedDate;
+  // dynamic approvedDate;
+  // bool isActive;
+  // DateTime createdAt;
+  // DateTime modifiedAt;
+  // String createdBy;
+  // dynamic modifiedBy;
+  // dynamic userId;
+  String leaveType;
+  // dynamic certificateId;
+  // dynamic clientId;
+  // dynamic approverId;
+
+  LeaveStatusData({
+    required this.id,
+    // required this.deleted,
+    // required this.deletedByCascade,
+    // required this.fromDate,
+    // required this.toDate,
+    // required this.status,
+    // required this.notes,
+    // required this.appliedDate,
+    // required this.approvedDate,
+    // required this.isActive,
+    // required this.createdAt,
+    // required this.modifiedAt,
+    // required this.createdBy,
+    // required this.modifiedBy,
+    // required this.userId,
+    required this.leaveType,
+    // required this.certificateId,
+    // required this.clientId,
+    // required this.approverId,
+  });
+
+  factory LeaveStatusData.fromJson(Map<String, dynamic> json) => LeaveStatusData(
+    id: json["id"],
+    // deleted: json["deleted"],
+    // deletedByCascade: json["deleted_by_cascade"],
+    // fromDate: json["from_date"],
+    // toDate: json["to_date"],
+    // status: json["status"],
+    // notes: json["notes"],
+    // appliedDate: json["applied_date"],
+    // approvedDate: json["approved_date"],
+    // isActive: json["is_active"],
+    // createdAt: DateTime.parse(json["created_at"]),
+    // modifiedAt: DateTime.parse(json["modified_at"]),
+    // createdBy: json["created_by"],
+    // modifiedBy: json["modified_by"],
+    // userId: json["user_id"],
+    leaveType: json["leave_type"],
+    // certificateId: json["certificate_id"],
+    // clientId: json["client_id"],
+    // approverId: json["approver_id"],
+  );
+
+}
+
+class CertificateId {
+  String id;
+  String mediaUrl;
+  // dynamic deleted;
+  // bool deletedByCascade;
+  // dynamic awsUrl;
+  // String fileExtension;
+  // String mediaType;
+  // bool isActive;
+  // DateTime createdAt;
+  // DateTime modifiedAt;
+  // dynamic createdBy;
+  // dynamic modifiedBy;
+
+  CertificateId({
+    required this.id,
+    required this.mediaUrl,
+    // required this.deleted,
+    // required this.deletedByCascade,
+    // required this.awsUrl,
+    // required this.fileExtension,
+    // required this.mediaType,
+    // required this.isActive,
+    // required this.createdAt,
+    // required this.modifiedAt,
+    // required this.createdBy,
+    // required this.modifiedBy,
+  });
+
+  factory CertificateId.fromJson(Map<String, dynamic> json) => CertificateId(
+    id: json["id"],
+    mediaUrl: json["media_url"],
+    // deleted: json["deleted"],
+    // deletedByCascade: json["deleted_by_cascade"],
+    // awsUrl: json["aws_url"],
+    // fileExtension: json["file_extension"],
+    // mediaType: json["media_type"],
+    // isActive: json["is_active"],
+    // createdAt: DateTime.parse(json["created_at"]),
+    // modifiedAt: DateTime.parse(json["modified_at"]),
+    // createdBy: json["created_by"],
+    // modifiedBy: json["modified_by"],
+  );
+}
+
+
+class PermissionApply {
+  String fromTime;
+  String toTime;
+  String notes;
+  String userId;
+  String fromdate;
+
+  PermissionApply({
+    required this.fromTime,
+    required this.toTime,
+    required this.notes,
+    required this.userId,
+    required this.fromdate,
+  });
+
+  factory PermissionApply.fromJson(Map<String, dynamic> json) => PermissionApply(
+    fromTime: json["from_time"],
+    toTime: json["to_time"],
+    notes: json["notes"],
+    userId: json["user_id"],
+    fromdate: json['from_date'],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "from_time": fromTime,
+    "to_time": toTime,
+    "notes": notes,
+    "user_id": userId,
+    "from_date" : fromdate,
+  };
+}
+
+
+
+
 
 
 

@@ -89,7 +89,7 @@ class AppAlertController{
 
     return showGeneralDialog<void>(
       barrierDismissible: false,
-      transitionDuration: Duration(milliseconds: 300),
+      transitionDuration: const Duration(milliseconds: 300),
       context: inContext,
       pageBuilder: (context, animation, secondaryAnimation) => _alert,
     );
